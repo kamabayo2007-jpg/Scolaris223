@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Gestion École - Système Intégré de Gestion Scolaire</title>
+    <meta name="description" content="Solution professionnelle complète de gestion scolaire : administration, élèves, professeurs, notes, absences, emplois du temps et paiements.">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts Inter & Outfit pour un rendu professionnel et moderne -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ÉCRAN D'AUTHENTIFICATION (SI NON CONNECTÉ) -->
+    <div id="auth-screen" class="auth-screen hidden">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="school-logo">🎓</div>
+                <h1>ERP Gestion École</h1>
+                <p>Système Intégré de Vie Scolaire & Administration</p>
+            </div>
+
+            <form id="form-login" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-username">Identifiant ou Email</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="ex: admin ou prof.bernard" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">
+                    Se connecter à l'espace scolaire
+                </button>
+            </form>
+
+            <div class="demo-accounts-box">
+                <h3>Comptes de démonstration :</h3>
+                <div class="demo-accounts-grid">
+                    <div class="demo-pill" onclick="remplirIdentifiants('admin', 'Admin@123456')">
+                        <span class="role-badge role-admin">ADMIN</span>
+                        <strong>admin</strong> / Admin@123456
+                    </div>
+                    <div class="demo-pill" onclick="remplirIdentifiants('direction', 'Direction@123456')">
+                        <span class="role-badge" style="background: #7c3aed; color: #fff;">DIRECTION</span>
+                        <strong>direction</strong> / Direction@123456
+                    </div>
+                    <div class="demo-pill" onclick="remplirIdentifiants('prof.bernard', 'Prof@123456')">
+                        <span class="role-badge role-prof">PROFESSEUR</span>
+                        <strong>prof.bernard</strong> / Prof@123456
+                    </div>
+                    <div class="demo-pill" onclick="remplirIdentifiants('lucas.moreau', 'Eleve@123456')">
+                        <span class="role-badge role-eleve">ÉLÈVE</span>
+                        <strong>lucas.moreau</strong> / Eleve@123456
+                    </div>
+                    <div class="demo-pill" onclick="remplirIdentifiants('parent.moreau', 'Parent@123456')">
+                        <span class="role-badge" style="background: #d97706; color: #fff;">PARENT</span>
+                        <strong>parent.moreau</strong> / Parent@123456
+                    </div>
+                    <div class="demo-pill" onclick="remplirIdentifiants('comptable', 'Compta@123456')">
+                        <span class="role-badge" style="background: #0891b2; color: #fff;">COMPTABLE</span>
+                        <strong>comptable</strong> / Compta@123456
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION PRINCIPALE (UTILISATEUR AUTHENTIFIÉ) -->
+    <div id="app-layout" class="app-layout">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button id="btn-toggle-sidebar" class="btn-icon mobile-only" onclick="toggleSidebar()" aria-label="Ouvrir le menu">
+                    ☰
+                </button>
+                <div class="app-branding">
+                    <span class="brand-icon">🎓</span>
+                    <span class="brand-title">ERP Gestion École</span>
+                </div>
+                <span class="academic-year-badge">Année 2025-2026</span>
+            </div>
+
+            <!-- CHAMP DE RECHERCHE GLOBALE EN TEMPS RÉEL -->
+            <div class="topbar-center">
+                <div class="global-search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="global-search-input" class="global-search-input" placeholder="Recherche rapide (élèves, profs, classes)..." oninput="handleGlobalSearch(event)" autocomplete="off">
+                    <div id="global-search-results" class="global-search-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="user-badge" id="user-profile-badge">
+                    <div class="user-avatar" id="topbar-user-avatar">AD</div>
+                    <div class="user-meta hide-mobile">
+                        <span class="user-name" id="topbar-user-name">Administrateur</span>
+                        <span class="user-role-badge" id="topbar-user-role">ADMIN</span>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" onclick="logout()" title="Déconnexion">
+                    Déconnexion
+                </button>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <!-- SIDEBAR -->
+            <aside id="app-sidebar" class="sidebar">
+                <div class="sidebar-header hide-desktop">
+                    <span class="brand-title">Menu Navigation</span>
+                    <button class="btn-icon" onclick="toggleSidebar()">✕</button>
+                </div>
+
+                <nav class="sidebar-nav" id="sidebar-nav-links">
+                    <!-- Généré dynamiquement selon le rôle -->
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="system-status">
+                        <span class="status-dot"></span> Système en ligne
+                    </div>
+                </div>
+            </aside>
+
+            <!-- OVERLAY MOBILE -->
+            <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+            <!-- CONTENU DE LA VUE ACTIVE -->
+            <main class="main-content" id="main-view-container">
+                <div class="loader-container" id="main-loader">
+                    <div class="spinner"></div>
+                    <p>Chargement des données en cours...</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- CONTENEUR MODALES RÉUTILISABLES -->
+    <div id="modal-container" class="modal-backdrop hidden">
+        <div class="modal-dialog" id="modal-dialog-content">
+            <!-- Rempli dynamiquement -->
+        </div>
+    </div>
+
+    <!-- SCRIPTS JAVASCRIPT MODULAIRES -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

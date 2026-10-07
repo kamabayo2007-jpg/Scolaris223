@@ -1,0 +1,8 @@
+{
+  "name": "Scolaris",
+  "description": "Plateforme intelligente de gestion scolaire multi-établissements avec paiements Mobile Money (Orange, Moov, Wave en FCFA), bilingue et suivi académique complet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
